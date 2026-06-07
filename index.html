@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>magbFoxx_FOPVPX | 마인크래프트 시참 서버</title>
-    <!-- FontAwesome (하단 소셜 미디어 아이콘용) -->
+    <!-- FontAwesome (하단 소셜 미디어 및 다양한 공식 스타일 아이콘용) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- AOS 애니메이션 라이브러리 -->
+    <!-- AOS 애니메이션 라이브러리 (스크롤 시 요소들의 자연스러운 활성화) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <style>
-        /* 마인크래프트 공식 스타일 & 깔끔한 UI를 위한 폰트 설정 */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700;900&display=swap');
 
         :root {
             --mc-green: #117821;
             --mc-green-hover: #1b9d2f;
             --mc-dark: #141414;
-            --mc-gray: #262626;
-            --mc-light-gray: #3c3c3c;
-            --text-color: #f5f5f5;
+            --mc-gray: #1f1f1f;
+            --mc-card-bg: #2e2e2e;
+            --mc-light-gray: #4a4a4a;
+            --text-color: #ffffff;
         }
 
         * {
@@ -36,43 +36,15 @@
             overflow-x: hidden;
         }
 
-        /* 공통 스타일: 마인크래프트풍 고퀄리티 버튼 */
-        .mc-btn {
-            display: inline-block;
-            background-color: var(--mc-green);
-            color: white;
-            padding: 14px 28px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-decoration: none;
-            text-transform: uppercase;
-            border: none;
-            border-bottom: 4px solid #084311;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .mc-btn:hover {
-            background-color: var(--mc-green-hover);
-            transform: translateY(-2px);
-            border-bottom: 4px solid #117821;
-        }
-
-        .mc-btn:active {
-            transform: translateY(2px);
-            border-bottom: 0px solid transparent;
-        }
-
-        /* 헤더 / 상단 네비게이션 */
+        /* 상단 네비게이션 바 (공식 홈페이지 고유의 블랙 스트립 디자인) */
         header {
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: rgba(20, 20, 20, 0.95);
-            border-bottom: 3px solid var(--mc-gray);
+            background-color: rgba(26, 26, 26, 0.98);
+            border-bottom: 4px solid #000000;
             z-index: 1000;
-            padding: 15px 5%;
+            padding: 14px 6%;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -82,40 +54,212 @@
             font-size: 1.4rem;
             font-weight: 900;
             letter-spacing: 1px;
-            color: #fff;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: #ffffff;
         }
         .logo span { color: var(--mc-green-hover); }
 
-        /* 히어로 섹션 (첫 화면) */
-        .hero {
-            height: 100vh;
+        .nav-links {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            gap: 25px;
             align-items: center;
-            text-align: center;
-            padding: 0 20px;
+        }
+        .nav-links a {
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 700;
+            transition: color 0.2s;
+            text-transform: uppercase;
+        }
+        .nav-links a:hover {
+            color: #ffffff;
+        }
+
+        /* 우측 상단 메인 버튼 */
+        .header-btn {
+            background-color: var(--mc-green);
+            color: white;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 3px solid #084311;
+            transition: background-color 0.2s;
+        }
+        .header-btn:hover {
+            background-color: var(--mc-green-hover);
+        }
+
+        /* */
+        /* 대형 메인 비주얼 배너 컨테이너 */
+        .hero-container {
+            width: 100%;
+            height: 90vh;
+            min-height: 600px;
             position: relative;
+            margin-top: 50px; /* 헤더 공간 보정 */
+            border-bottom: 4px solid #000000;
+            /* 정보 카드 상자가 하단 경계선 밖으로 자연스럽게 오버랩되도록 overflow 해제 */
+            overflow: visible; 
         }
 
-        .hero h1 {
-            font-size: 4rem;
+        /* 슬라이드 트랙 */
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s;
+            z-index: 1;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 2;
+        }
+
+        /* 큰 정보 상자 전체의 배경을 Button_background.png 이미지 텍스처로 대체하고 위치를 최하단 경계 오버랩 영역으로 이동 */
+        .hero-info-box {
+            position: absolute;
+            /* 경계선을 가로지르는 입체적인 오버랩 레이아웃을 위해 bottom을 최하단으로 마이너스 이동 */
+            bottom: -40px; 
+            left: 6%;
+            background-image: url('Button_background.png'); /* 요청해주신 이미지 텍스처 바인딩 */
+            background-size: 100% 100%; /* 비틀림 없이 꽉 차도록 매핑 */
+            background-repeat: no-repeat;
+            background-color: transparent;
+            /* 상단 패딩을 늘려 타이틀이 배경 이미지 내부 검은색 텍스처 영역에 완벽히 들어오도록 배치 */
+            padding: 95px 40px 40px 40px; 
+            max-width: 480px;
+            width: 90%;
+            border: none; /* 검정색 투박한 보더 완전 제거 */
+            box-shadow: none !important; /* 그림자 제거 */
+            z-index: 5;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .hero-info-box h1 {
+            font-size: 2.2rem;
             font-weight: 900;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.7);
+            margin-bottom: 15px;
+            color: #ffffff;
+            line-height: 1.2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
         }
 
-        .hero p {
-            font-size: 1.5rem;
-            color: #b0b0b0;
-            margin-bottom: 30px;
+        .hero-info-box p {
+            font-size: 1rem;
+            color: #ececec;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
         }
 
-        /* [수정 완비] 접속 즉시 무조건 화면 정중앙 아래에 고정되는 스크롤 유도 디자인 */
+        /* 정보 카드 배경 텍스처 위에서 확실한 구분을 주기 위한 모던 시그니처 그린 액션 버튼 */
+        .mc-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--mc-green);
+            color: white;
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: none;
+            border-bottom: 4px solid #084311;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .mc-btn::after {
+            content: ' ❯';
+            margin-left: 10px;
+            font-size: 0.9rem;
+        }
+
+        .mc-btn:hover {
+            background-color: var(--mc-green-hover);
+            transform: translateY(-2px);
+        }
+
+        .mc-btn:active {
+            transform: translateY(1px); /* 클릭 인터랙션 유지 */
+        }
+
+        /* 좌우 화살표 공식 제어 인터페이스 */
+        .carousel-arrows {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .arrow-btn {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            pointer-events: auto;
+        }
+
+        .arrow-btn:hover {
+            background-color: var(--mc-green);
+            border-color: var(--mc-green-hover);
+        }
+
+        /* 공식 사이트 우측 하단 미니 썸네일 미리보기 셀렉터 재현 */
+        .hero-thumbnails {
+            position: absolute;
+            bottom: 50px;
+            right: 6%;
+            display: flex;
+            gap: 15px;
+            z-index: 5;
+        }
+
+        .thumb-card {
+            width: 110px;
+            height: 65px;
+            border: 3px solid #000000;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+
+        .thumb-card.active, .thumb-card:hover {
+            opacity: 1;
+            border-color: var(--mc-green-hover);
+            transform: scale(1.05);
+        }
+
+        /* 화면 정중앙 최하단 고정 스크롤 유도 인디케이터 (요청에 부합하도록 즉시 노출) */
         .scroll-indicator {
             position: absolute;
-            bottom: 30px;
+            bottom: 20px;
             left: 0;
             right: 0;
             margin: 0 auto;
@@ -123,132 +267,171 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #888;
-            font-size: 0.9rem;
+            color: #ffffff;
+            font-size: 0.8rem;
             text-decoration: none;
-            transition: color 0.3s ease;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .scroll-indicator:hover {
-            color: var(--mc-green-hover);
-        }
-
-        .scroll-indicator span {
-            margin-bottom: 8px;
-            letter-spacing: 1px;
             font-weight: bold;
-            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            z-index: 10;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
         }
 
         .scroll-indicator i {
-            font-size: 1.2rem;
+            margin-top: 5px;
+            font-size: 1.1rem;
             animation: bounce 1.6s infinite;
         }
 
-        /* 끊김 없고 자연스러운 순수 CSS 루프 바운스 애니메이션 */
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-8px);
-            }
-            60% {
-                transform: translateY(-4px);
-            }
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+            60% { transform: translateY(-3px); }
         }
 
-        /* 메인 콘텐츠 섹션 공통 */
+        /* */
+        /* 메인 바디 섹션 레이아웃 */
         section {
-            padding: 100px 10%;
-            max-width: 1400px;
+            padding: 90px 8%;
+            max-width: 1300px;
             margin: 0 auto;
         }
 
+        /* "MINECRAFT 게임 둘러보기" 테마의 메인 타이틀 */
         .section-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 50px;
+            font-size: 2.3rem;
+            font-weight: 900;
             text-align: center;
-            position: relative;
-            padding-bottom: 15px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
         }
 
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            background-color: var(--mc-green);
+        .section-subtitle {
+            text-align: center;
+            color: var(--mc-green-hover);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            text-decoration: none;
+            display: block;
         }
 
-        /* 서버 정보 카드 그리드 */
+        /* 3열 대칭형 공식 카드형 그리드 디자인 */
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
         }
 
         .info-card {
             background-color: var(--mc-gray);
-            border: 2px solid var(--mc-light-gray);
+            border: 1px solid var(--mc-light-gray);
             padding: 30px;
-            border-radius: 4px;
-            text-align: center;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
 
         .info-card:hover {
             transform: translateY(-5px);
-            border-color: var(--mc-green);
+            border-color: var(--mc-green-hover);
         }
 
         .info-card i {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--mc-green-hover);
             margin-bottom: 15px;
         }
 
         .info-card h3 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+            font-weight: 800;
             margin-bottom: 10px;
-            color: #fff;
+            color: #ffffff;
         }
 
         .info-card p {
-            font-size: 1.1rem;
-            color: #bfbfbf;
-            word-break: break-all;
+            font-size: 0.95rem;
+            color: #cccccc;
+            line-height: 1.6;
         }
 
-        /* 복사 알림 토스트 */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--mc-green);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 4px;
+        /* */
+        /* 서버 설명 섹션 스타일 */
+        .desc-container {
+            background-color: var(--mc-gray);
+            border: 1px solid var(--mc-light-gray);
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .desc-main-text {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--mc-light-gray);
+            padding-bottom: 30px;
+        }
+
+        .desc-main-text h3 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .desc-main-text p {
+            font-size: 1.05rem;
+            color: #cccccc;
+            line-height: 1.8;
+        }
+
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .step-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--mc-light-gray);
+            padding: 25px;
+            position: relative;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--mc-green-hover);
+        }
+
+        .step-num {
+            display: inline-block;
+            background-color: var(--mc-green);
+            color: #ffffff;
+            font-size: 0.75rem;
             font-weight: bold;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 10000;
-            pointer-events: none;
+            padding: 3px 8px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
         }
 
-        /* 규칙 섹션 스타일 */
+        .step-card h4 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .step-card p {
+            font-size: 0.9rem;
+            color: #bbbbbb;
+            line-height: 1.6;
+        }
+
+        /* */
+        /* 규칙 관리함 스타일 구조 */
         .rules-container {
             background-color: var(--mc-gray);
-            border: 2px solid var(--mc-light-gray);
+            border: 1px solid var(--mc-light-gray);
             padding: 40px;
-            border-radius: 4px;
         }
 
         .rule-category {
@@ -260,11 +443,12 @@
         }
 
         .rule-category h3 {
-            font-size: 1.5rem;
-            color: var(--mc-green-hover);
+            font-size: 1.3rem;
+            color: #ffffff;
             margin-bottom: 15px;
-            border-left: 4px solid var(--mc-green);
-            padding-left: 10px;
+            border-left: 5px solid var(--mc-green);
+            padding-left: 12px;
+            font-weight: 800;
         }
 
         .rule-category ul {
@@ -272,10 +456,10 @@
         }
 
         .rule-category li {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             line-height: 1.7;
-            margin-bottom: 10px;
-            color: #d8d8d8;
+            margin-bottom: 12px;
+            color: #cccccc;
             padding-left: 15px;
             position: relative;
         }
@@ -284,111 +468,130 @@
             content: '▪';
             position: absolute;
             left: 0;
-            color: var(--mc-green);
+            color: var(--mc-green-hover);
         }
 
-        /* 크루 / 관리자 섹션 */
+        /* 크루 정보 카드 구조 */
         .crew-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
         }
 
         .crew-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--mc-light-gray);
-            padding: 20px;
+            background-color: #262626;
+            border-top: 4px solid var(--mc-light-gray);
+            padding: 25px 20px;
             text-align: center;
-            border-radius: 4px;
+            transition: transform 0.2s ease;
+        }
+
+        .crew-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .crew-card.leader {
+            border-top-color: var(--mc-green);
         }
 
         .crew-role {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--mc-green-hover);
             font-weight: bold;
+            margin-bottom: 6px;
             text-transform: uppercase;
-            margin-bottom: 5px;
         }
 
         .crew-name {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            color: #fff;
+            color: #ffffff;
         }
 
-        /* 푸터 / 소셜 링크 */
+        /* */
+        /* 하단 푸터 바 */
         footer {
-            background-color: #0b0b0b;
-            border-top: 3px solid var(--mc-gray);
-            padding: 60px 20px;
+            background-color: #111111;
+            border-top: 4px solid #000000;
+            padding: 55px 20px;
             text-align: center;
         }
 
         footer p {
-            color: #777;
+            color: #666666;
             margin-bottom: 25px;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
+            font-weight: 700;
         }
 
         .social-links {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 25px;
+            gap: 20px;
         }
 
         .social-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--mc-gray);
-            color: #fff;
-            font-size: 1.6rem;
+            width: 54px;
+            height: 54px;
+            background-color: #222222;
+            color: #ffffff;
+            font-size: 1.4rem;
             text-decoration: none;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            overflow: hidden;
+            transition: all 0.2s ease;
         }
 
-        /* 각 소셜 브랜드 고유 컬러 매칭 */
         .social-btn.youtube:hover {
             background-color: #ff0000;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
         }
         .social-btn.discord:hover {
             background-color: #5865F2;
-            box-shadow: 0 0 15px rgba(88, 101, 242, 0.4);
         }
         
-        /* 지정된 커스텀 X 이미지 아이콘 디자인 스타일링 */
+        /* 요청하신 특정 규격의 X(Twitter) 이미지 스타일링 구조 */
         .social-btn.x-twitter {
-            padding: 14px;
+            padding: 13px;
         }
         .social-btn.x-twitter img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: invert(1); /* 검은색 이미지를 다크모드용 흰색으로 반전 */
-            transition: all 0.3s ease;
+            filter: invert(1); /* 검은색 자산을 다크모드 대응 흰색으로 실시간 반전 */
+            transition: all 0.2s ease;
         }
         .social-btn.x-twitter:hover {
             background-color: #ffffff;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
         }
         .social-btn.x-twitter:hover img {
-            filter: invert(0); /* 흰색 배경으로 바뀔 때 로고를 원래 검은색으로 복원 */
-            transform: scale(1.1);
+            filter: invert(0); /* 흰 배경 오버 시 본래의 검은색 반전 해제 */
         }
 
-        /* 반응형 모바일 디자인 */
+        /* 알림 토스트 팝업 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--mc-green);
+            color: white;
+            padding: 12px 24px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        /* 미디어 쿼리 반응형 처리 */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .hero p { font-size: 1.1rem; }
-            section { padding: 60px 5%; }
-            .section-title { font-size: 2rem; }
+            .hero-info-box { left: 5%; bottom: 30px; }
+            .hero-info-box h1 { font-size: 1.7rem; }
+            .section-title { font-size: 1.8rem; }
+            .hero-thumbnails { display: none; } /* 모바일 해상도 썸네일 축소 차단 */
+            section { padding: 50px 5%; }
         }
     </style>
 </head>
@@ -396,66 +599,142 @@
 
     <!-- 상단 헤더 -->
     <header>
-        <div class="logo">magbFoxx_<span>FOPVPX</span></div>
-        <a href="#info" class="mc-btn" style="padding: 8px 16px; font-size: 0.9rem;">서버 정보 보기</a>
+        <a href="#" class="logo">magbFoxx_<span>FOPVPX</span></a>
+        <div class="nav-links">
+            <a href="#info">정보</a>
+            <a href="#description">설명</a>
+            <a href="#rules">규칙</a>
+            <a href="#crew">크루</a>
+            <a href="#info" class="header-btn">서버 참여</a>
+        </div>
     </header>
 
-    <!-- 히어로 섹션 -->
-    <div class="hero">
-        <h1 data-aos="zoom-in" data-aos-duration="1000">magbFoxx_FOPVPX</h1>
-        <p data-aos="fade-up" data-aos-delay="300" data-aos-duration="1000">치열한 전투가 기다리는 마인크래프트 시참 PVP 서버</p>
-        <div data-aos="fade-up" data-aos-delay="600" data-aos-duration="1000">
-            <button class="mc-btn" onclick="copyIP()">
-                <i class="fa-solid fa-copy"></i> 주소 복사하여 참여하기
-            </button>
+    <!-- -->
+    <!-- 히어로 대형 배너 섹션 (정밀 슬라이드 구동 프레임워크) -->
+    <div class="hero-container" id="carousel-viewport">
+        <!-- 슬라이드 1: PvP_in_Action_1.png 배경 -->
+        <div class="hero-slide active" id="slide-0" style="background-image: url('PvP_in_Action_1.png');"></div>
+        <!-- 슬라이드 2: A_scene_of_sunbathing_1.png 배경 -->
+        <div class="hero-slide" id="slide-1" style="background-image: url('A_scene_of_sunbathing_1.png');"></div>
+        <!-- 슬라이드 3: Minecraft_Live__1170x500.png 배경 적용 -->
+        <div class="hero-slide" id="slide-2" style="background-image: url('Minecraft_Live__1170x500.png');"></div>
+
+        <!-- 검은 보더를 삭제하고, 상자 전체에 Button_background.png 텍스처를 적용한 정보 카드 -->
+        <div class="hero-info-box" id="info-overlay-box" data-aos="fade-right" data-aos-duration="1000">
+            <h1 id="overlay-title">전투 준비</h1>
+            <p id="overlay-desc">마인크래프트 야생형 PVP를 즐겨보세요!</p>
+            <button class="mc-btn" id="overlay-cta" onclick="handleCtaClick(0)">주소 복사</button>
+        </div>
+
+        <!-- 좌우 화살표 공식 제어 인터페이스 -->
+        <div class="carousel-arrows">
+            <button class="arrow-btn" onclick="prevSlide()" aria-label="이전 슬라이드"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="arrow-btn" onclick="nextSlide()" aria-label="다음 슬라이드"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
         
-        <!-- [수정 적용] 무조건 바로 뜨며 완벽하게 가로세로 정중앙인 스크롤 안내 기호 -->
+        <!-- 우측 하단 미니 썸네일 셀렉터 데코레이션 레이아웃 -->
+        <div class="hero-thumbnails" data-aos="fade-left" data-aos-duration="1000">
+            <button class="thumb-card active" id="thumb-0" style="background-image: url('PvP_in_Action_1.png');" onclick="jumpToSlide(0)" title="전투 준비"></button>
+            <button class="thumb-card" id="thumb-1" style="background-image: url('A_scene_of_sunbathing_1.png');" onclick="jumpToSlide(1)" title="자원 준비"></button>
+            <!-- 3번째 썸네일 카드도 동일 이미지로 반영 -->
+            <button class="thumb-card" id="thumb-2" style="background-image: url('Minecraft_Live__1170x500.png');" onclick="jumpToSlide(2)" title="Minecraft Live"></button>
+        </div>
+
+        <!-- 중앙 하단 상시 고정 스크롤 가이드 -->
         <a href="#info" class="scroll-indicator">
-            <span>Scroll Down</span>
+            <span>SCROLL DOWN</span>
             <i class="fa-solid fa-chevron-down"></i>
         </a>
     </div>
 
+    <!-- -->
     <!-- 서버 정보 섹션 -->
     <section id="info">
         <h2 class="section-title" data-aos="fade-up">SERVER INFO</h2>
+        <div class="section-subtitle" data-aos="fade-up">서버 기본 사양 및 실시간 연동 정보</div>
+        
         <div class="info-grid">
             <div class="info-card" data-aos="fade-up" data-aos-delay="100">
                 <i class="fa-solid fa-server"></i>
                 <h3>서버 주소</h3>
-                <p id="server-ip">magbfox.n-e.kr</p>
+                <p style="color: #fff; font-weight: bold; margin-top: 5px; font-size: 1.1rem;" id="server-ip">magbfox.n-e.kr</p>
             </div>
             <div class="info-card" data-aos="fade-up" data-aos-delay="200">
                 <i class="fa-solid fa-code-branch"></i>
                 <h3>서버 버전</h3>
-                <p>26.1.2</p>
+                <p style="color: #fff; font-weight: bold; margin-top: 5px; font-size: 1.1rem;">26.1.2</p>
             </div>
             <div class="info-card" data-aos="fade-up" data-aos-delay="300">
                 <i class="fa-solid fa-shield-halved"></i>
-                <h3>보안 및 엔진</h3>
-                <p>DDoS 보안 완비<br>Grim AC & MupztmReplay</p>
+                <h3>철저한 DDoS 방어 체계</h3>
+                <p>디도스 보안 솔루션이 완비되어 끊김 없는 쾌적한 주행 속도를 보장합니다.</p>
+            </div>
+            <div class="info-card" data-aos="fade-up" data-aos-delay="400">
+                <i class="fa-solid fa-user-shield"></i>
+                <h3>안티치트 시스템</h3>
+                <p>Grim Anticheat 및 MupztmReplay 실시간 모니터링을 통한 클린한 PVP 실현.</p>
             </div>
         </div>
     </section>
 
+    <!-- -->
+    <!-- 서버 설명 섹션 -->
+    <section id="description">
+        <h2 class="section-title" data-aos="fade-up">ABOUT SERVER</h2>
+        <div class="section-subtitle" data-aos="fade-up">FOPVPX 서버만의 한계 돌파형 독창적 콘텐츠 구성을 소개합니다</div>
+        
+        <div class="desc-container" data-aos="fade-up">
+            <div class="desc-main-text">
+                <h3>오직 컨트롤과 생존력으로 증명하는 야생 서바이벌 PVP</h3>
+                <p>
+                    magbFoxx_FOPVPX는 시청자들과 실시간으로 소통하며 극강의 생존 본능을 가리는 하드코어 시참 서버입니다.<br>
+                    안전 지대에서 이루어지는 단순한 PVP를 넘어, 무자비하고 차가운 야생 속에서 치열하게 우승을 쟁취해야 합니다.
+                </p>
+            </div>
+            
+            <div class="step-grid">
+                <div class="step-card" data-aos="fade-up" data-aos-delay="100">
+                    <span class="step-num">PHASE 01</span>
+                    <h4>30분 제한 야생 파밍</h4>
+                    <p>전투 시작 전, 모두에게 동일한 야생 필드가 열립니다. 주어진 단 30분이라는 시간 제한 속에 무기, 방어구, 버프 물약, 핵심 자원 및 식량을 신속하고 철저하게 확보해야 합니다.</p>
+                </div>
+                <div class="step-card" data-aos="fade-up" data-aos-delay="200">
+                    <span class="step-num">PHASE 02</span>
+                    <h4>전투 시간</h4>
+                    <p>전투 시간이 되면 자동으로 모든 플레이어는 지상으로 tp되고 자기장은 천천이 줄어들고 모은 자원으로 PVP를 하는 시간.</p>
+                </div>
+                <div class="step-card" data-aos="fade-up" data-aos-delay="300">
+                    <span class="step-num">PHASE 03</span>
+                    <h4>1대1 PVP</h4>
+                    <p>1대1까지 오면 거의 자기장은 0 0 쪽에 아주 가까운 상태이며 플레이어는 아주 잘 보이게 됨니다.</p>
+                </div>
+                <div class="step-card" data-aos="fade-up" data-aos-delay="400">
+                    <span class="step-num">PHASE 04</span>
+                    <h4>자원 시간 팁</h4>
+                    <p>자원시간에는 모든 피해를 무시 , 광물를 부시면 자동으로 주괴로 나옴 , 레드스톤이 다이아로 변경됨</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- -->
     <!-- 서버 규칙 섹션 -->
     <section id="rules">
         <h2 class="section-title" data-aos="fade-up">SERVER RULES</h2>
-        <div class="rules-container" data-aos="fade-up" data-aos-delay="200">
-            
+        <div class="section-subtitle" data-aos="fade-up">안전하고 정당한 플레이를 위한 필독 약관</div>
+        
+        <div class="rules-container" data-aos="fade-up">
             <div class="rule-category">
                 <h3>1. 운영 및 최종 권한 (Administration)</h3>
                 <ul>
-                    <li><strong>운영진 결정의 최종성:</strong> 서버 내 모든 상황에 대한 최종 판단은 운영진이 내립니다. 규칙에 명시되지 않은 사안이라도 즉각적인 조치를 취할 권한이 있습니다.</li>
-                    <li><strong>규칙 회피 및 허점 악용 금지:</strong> 문구상 허점을 찾아내어 교묘하게 위반하거나 제재를 피하려는 모든 시도를 금지합니다. 모든 유저는 규칙의 '의도'를 파악하고 준수해야 하며, 회피 의도가 다분할 경우 가중 처벌됩니다.</li>
+                    <li><strong>운영진 결정의 최종성:</strong> 서버 내 모든 상황에 대한 최종 판단은 운영진이 내립니다. 운영진은 서버의 안녕과 질서를 위해 필요한 경우 규칙에 명시되지 않은 사안이라도 즉각적인 조치를 취할 권한이 있습니다.</li>
+                    <li><strong>규칙 회피 및 허점 악용 금지:</strong> 규칙의 문구상 허점을 찾아내어 교묘하게 위반하거나, 제재를 피하려는 모든 시도를 금지합니다. "규칙에 없었는데요?"라는 식의 변명은 통용되지 않으며, 모든 유저는 규칙의 '의도'를 파악하고 준수해야 합니다. 회피 의도가 다분할 경우 일반 위반보다 가중 처벌됩니다.</li>
                 </ul>
             </div>
 
             <div class="rule-category">
                 <h3>2. PVP 및 티밍 규정 (Combat)</h3>
                 <ul>
-                    <li><strong>티밍(Teaming) 엄금:</strong> 본 서버는 개인전 기반입니다. 직접적인 동맹뿐만 아니라 고의 불공격, 아이템 공유 등의 '간접적 티밍'도 적발 시 처벌됩니다.</li>
+                    <li><strong>티밍(Teaming) 엄금:</strong> 개인전 기반입니다. 직접적인 동맹뿐만 아니라, 특정 대상을 고의로 공격하지 않거나 아이템을 공유하는 등의 '간접적 티밍'도 적발 시 처벌됩니다.</li>
                     <li><strong>전투 회피 금지:</strong> 전투 중 로그아웃(데스 로그), 지형지물 악용 무적 버그 활용 등을 엄격히 금지합니다.</li>
                 </ul>
             </div>
@@ -477,43 +756,45 @@
             </div>
 
             <div class="rule-category">
-                <h3>5. FOPVPX 서버 특수 규칙</h3>
+                <h3>5. FOPVPX 서버 특수 세부 규칙</h3>
                 <ul>
-                    <li><strong>액스레이 금지:</strong> 액스레이를 사용 시 서버에서 영구 밴 대상이 됩니다.</li>
-                    <li><strong>핵 금지:</strong> 핵을 사용 시 어떠한 조치나 유예 없이 바로 영구 밴 대상이 됩니다.</li>
-                    <li><strong>티밍 금지:</strong> 유저들끼리 정정당당하게 싸워 1등을 차지하는 서버입니다. 친구나 아는 사람과 동맹을 맺고 플레이할 시 <strong>[경고 2회]</strong> 조치됩니다.</li>
-                    <li><strong>허위 신고 금지:</strong> 악의적이거나 잘못된 신고를 진행할 경우 <strong>[경고 1회]</strong> 조치됩니다.</li>
-                    <li><strong>채팅 청결 유지:</strong> 채팅창 내 모든 욕설 및 비속어 사용이 엄격히 금지됩니다.</li>
+                    <li><strong>액스레이 금지:</strong> 액스레이를 사용 시 서버에 영구 밴 대상이 됩니다.</li>
+                    <li><strong>핵 금지:</strong> 핵을 사용 시 조치 없이 바로 영구 밴 대상이 됩니다.</li>
+                    <li><strong>티밍 금지:</strong> 유저들끼리 경쟁하여 1등을 가리는 서버입니다. 지인 및 친구와의 전투 회피 또는 암묵적인 팀플레이 동맹 적발 시 <strong>[경고 2회]</strong>를 부여합니다.</li>
+                    <li><strong>허위 신고 금지:</strong> 악의적이거나 거짓 정보를 활용하여 무고한 신고를 진행할 경우 <strong>[경고 1회]</strong>가 부과됩니다.</li>
+                    <li><strong>채팅 언어 청결 준수:</strong> 전체 채팅창 내 욕설, 패드립, 인격 모독적 발언 및 비속어 사용이 전면 일체 차단됩니다.</li>
                 </ul>
             </div>
-
         </div>
     </section>
 
-    <!-- 크루 / 제작진 섹션 -->
+    <!-- -->
+    <!-- 크루 및 제작진 섹션 -->
     <section id="crew">
         <h2 class="section-title" data-aos="fade-up">SERVER CREW</h2>
-        <div class="crew-grid" data-aos="fade-up" data-aos-delay="200">
-            <div class="crew-card">
-                <div class="crew-role">반장 / 안치검거 / 테스터</div>
-                <div class="crew-name">T_rex36</div>
-            </div>
-            <div class="crew-card" style="border-color: var(--mc-green);">
-                <div class="crew-role">총관리 / 플러그인 / DB / 안전</div>
+        <div class="section-subtitle" data-aos="fade-up">서버를 보다 쾌적하고 튼튼하게 관리해 주는 총괄 운영 크루</div>
+        
+        <div class="crew-grid">
+            <div class="crew-card leader" data-aos="fade-up" data-aos-delay="100">
+                <div class="crew-role">총관리 / 플러그인 / DB / 서버 안전</div>
                 <div class="crew-name">magbFox</div>
             </div>
-            <div class="crew-card">
-                <div class="crew-role">번역 / 아이디어 / 봇 설정</div>
+            <div class="crew-card leader" data-aos="fade-up" data-aos-delay="200">
+                <div class="crew-role">번역 / 기획 및 아이디어 / 봇 세팅</div>
                 <div class="crew-name">magbFox</div>
             </div>
-            <div class="crew-card">
-                <div class="crew-role">버그 해결 / 도메인 관리 / 테스터</div>
+            <div class="crew-card leader" data-aos="fade-up" data-aos-delay="300">
+                <div class="crew-role">버그 해결 / 도메인 총괄 / 테스터</div>
                 <div class="crew-name">magbFox / mabgFox</div>
+            </div>
+            <div class="crew-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="crew-role">반장 / 핵 유저 검거 / 공식 테스터</div>
+                <div class="crew-name">T_rex36</div>
             </div>
         </div>
     </section>
 
-    <!-- 푸터 및 소셜 링크 섹션 -->
+    <!-- 푸터 영역 및 소셜 버튼 팩 -->
     <footer>
         <p>&copy; 2026 magbFoxx_FOPVPX. All Rights Reserved.</p>
         <div class="social-links">
@@ -524,24 +805,121 @@
                 <i class="fa-brands fa-discord"></i>
             </a>
             <a href="https://x.com/magbFox" target="_blank" class="social-btn x-twitter" title="X (Twitter)">
+                <!-- 요구된 규격 이미지 바인딩 -->
                 <img src="https://img.icons8.com/?size=100&id=phOKFKYpe00C&format=png&color=000000" alt="X Logo">
             </a>
         </div>
     </footer>
 
-    <!-- 클립보드 복사 알림창 -->
-    <div class="toast" id="toast">서버 주소가 복사되었습니다!</div>
+    <!-- 복사 성공 토스트 알림창 -->
+    <div class="toast" id="toast">서버 IP 주소가 클립보드에 복사되었습니다!</div>
 
-    <!-- AOS 애니메이션 스크립트 라이브러리 추가 -->
+    <!-- -->
+    <!-- AOS 애니메이션 연동 구동 -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // 애니메이션 초기화
         AOS.init({
             duration: 800,
             once: true
         });
 
-        // 주소 복사 기능 함수
+        // 슬라이드 데이터셋 매핑 (요청 내용에 맞게 구조 전면 개편)
+        const slidesData = [
+            {
+                title: "전투 준비",
+                desc: "마인크래프트 야생형 PVP를 즐겨보세요!",
+                ctaText: "주소 복사"
+            },
+            {
+                title: "자원 준비",
+                desc: "30분 안에 자원을 수집하고 그 자원으로 전투 하세요!",
+                ctaText: "주소 복사"
+            },
+            {
+                title: "Minecraft Live",
+                desc: "마인크래프트에 최신 라이브를 보고 곧 업데이트될 내용을 알아보세요",
+                ctaText: "확인하러 가기"
+            }
+        ];
+
+        let currentActiveIndex = 0;
+        const totalSlides = slidesData.length;
+
+        // 슬라이드 업데이트 기능
+        function updateCarousel(targetIndex) {
+            // 인덱스 범위 정규화
+            if (targetIndex >= totalSlides) targetIndex = 0;
+            if (targetIndex < 0) targetIndex = totalSlides - 1;
+
+            currentActiveIndex = targetIndex;
+
+            // 1. 모든 배경 슬라이드 비활성화 후 타겟 활성화
+            document.querySelectorAll('.hero-slide').forEach((slide, idx) => {
+                if (idx === targetIndex) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // 2. 썸네일 액티브 전환
+            document.querySelectorAll('.thumb-card').forEach((thumb, idx) => {
+                if (idx === targetIndex) {
+                    thumb.classList.add('active');
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
+
+            // 3. 오버랩 텍스트 박스 실시간 페이드아웃 후 전환 연출
+            const infoBox = document.getElementById('info-overlay-box');
+            infoBox.style.opacity = '0';
+            infoBox.style.transform = 'translateY(15px)';
+
+            setTimeout(() => {
+                document.getElementById('overlay-title').innerText = slidesData[targetIndex].title;
+                document.getElementById('overlay-desc').innerText = slidesData[targetIndex].desc;
+                document.getElementById('overlay-cta').innerText = slidesData[targetIndex].ctaText;
+                
+                infoBox.style.opacity = '1';
+                infoBox.style.transform = 'translateY(0)';
+            }, 300);
+        }
+
+        // 이전 / 다음 제어
+        function nextSlide() {
+            updateCarousel(currentActiveIndex + 1);
+        }
+
+        // 이전 슬라이드로 제어
+        function prevSlide() {
+            updateCarousel(currentActiveIndex - 1);
+        }
+
+        // 섬네일 다이렉트 점프
+        function jumpToSlide(index) {
+            updateCarousel(index);
+        }
+
+        // 각 슬라이드별 고유 CTA 액션 처리기 수정
+        function handleCtaClick(overrideIndex = null) {
+            const activeIndex = overrideIndex !== null ? overrideIndex : currentActiveIndex;
+            
+            if (activeIndex === 0 || activeIndex === 1) {
+                // 1번 및 2번 슬라이드: 주소 복사하기
+                copyIP();
+            } else if (activeIndex === 2) {
+                // 3번 슬라이드: 곧 업데이트될 내용을 알아보러 가기 (새 창으로 연결)
+                window.open("https://www.minecraft.net/ko-kr/article/minecraft-26-2-pre-release-3", "_blank");
+            }
+        }
+
+        // 이벤트 바인딩 오버라이드
+        document.getElementById('overlay-cta').onclick = function() {
+            handleCtaClick(currentActiveIndex);
+        };
+
+        // 클립보드 주소 복사 핵심 알고리즘
         function copyIP() {
             const ipText = document.getElementById('server-ip').innerText;
             navigator.clipboard.writeText(ipText).then(() => {
@@ -551,9 +929,32 @@
                     toast.style.opacity = '0';
                 }, 2000);
             }).catch(err => {
-                alert('주소 복사에 실패했습니다. 수동으로 복사해주세요: ' + ipText);
+                // 대체 메커니즘 제공
+                const textArea = document.createElement("textarea");
+                textArea.value = ipText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const toast = document.getElementById('toast');
+                    toast.style.opacity = '1';
+                    setTimeout(() => {
+                        toast.style.opacity = '0';
+                    }, 2000);
+                } catch (e) {
+                    alert('IP 복사에 실패했습니다: ' + ipText);
+                }
+                document.body.removeChild(textArea);
             });
         }
+
+        // 페이지 로드 시 자동 순환 타이머 설정 (선택 사항 - 수동 제어가 좋다면 비활성화 가능)
+        let autoCycle = setInterval(nextSlide, 7000);
+
+        // 사용자가 컨트롤 버튼을 누르면 자동 재생 임시 멈춤
+        document.getElementById('carousel-viewport').addEventListener('click', () => {
+            clearInterval(autoCycle);
+        });
     </script>
 </body>
 </html>
